@@ -1,0 +1,201 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// --------------------
+/// ENUMS
+/// --------------------
+
+enum MediaType {
+  BOOK
+  MOVIE
+  TV
+  SONG
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+}
+
+enum ReportTarget {
+  REVIEW
+  USER
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+enum NotificationType {
+  NEW_FOLLOW
+  REVIEW_LIKED
+  NEW_REVIEW_FROM_FOLLOWED
+  NEW_COMMENT
+}
+
+/// --------------------
+/// MODELS
+/// --------------------
+
+model User {
+  id              String     @id @default(uuid())
+  authId          String     @unique // Auth0 subject (auth0|xyz)
+  email           String?    @unique
+  name            String?
+  username        String?    @unique
+  avatarUrl       String?
+  favoriteType    MediaType?
+  favoriteMediaId String?
+  favoriteMedia   Media?     @relation(fields: [favoriteMediaId], references: [id], onDelete: SetNull)
+
+  reviews       Review[]
+  reactions     ReviewReaction[]
+  bookmarks     Bookmark[]
+  followers     Follow[]         @relation("Followers")
+  following     Follow[]         @relation("Following")
+  reportsFiled  Report[]         @relation("ReportsFiled")
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authId])
+}
+
+model Media {
+  id            String          @id @default(uuid())
+  type          MediaType
+  title         String
+  metadata      Json // JSONB field for arbitrary details (author, year, etc.)
+  averageRating Float?
+  reviewCount   Int?            @default(0)
+  reviews       Review[]
+  externals     MediaExternal[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User[]
+
+  @@index([type, title])
+}
+
+model MediaExternal {
+  id         String @id @default(uuid())
+  mediaId    String
+  provider   String // e.g. TMDB, OPEN_LIBRARY, URL
+  externalId String
+
+  media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([provider, externalId])
+  @@index([mediaId])
+}
+
+model Review {
+  id           String  @id @default(uuid())
+  contentfulId String  @unique
+  userId       String
+  mediaId      String
+  rating       Int?
+  spoiler      Boolean @default(false)
+  likeCount    Int     @default(0)
+  dislikeCount Int     @default(0)
+  status       String  @default("PUBLISHED") // could later be enum
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  media     Media            @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  reactions ReviewReaction[]
+  bookmarks Bookmark[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([mediaId, createdAt])
+  @@index([userId, createdAt])
+  @@index([status])
+}
+
+model ReviewReaction {
+  id       String       @id @default(uuid())
+  reviewId String
+  userId   String
+  type     ReactionType
+
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([reviewId, userId])
+  @@index([userId])
+  @@index([reviewId])
+}
+
+model Follow {
+  id          String @id @default(uuid())
+  followerId  String
+  followingId String
+
+  follower  User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model Bookmark {
+  id       String @id @default(uuid())
+  userId   String
+  reviewId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, reviewId])
+  @@index([userId])
+  @@index([reviewId])
+}
+
+model Report {
+  id         String       @id @default(uuid())
+  reporterId String
+  targetType ReportTarget
+  targetId   String
+  reason     String?      @db.Text
+  status     ReportStatus @default(OPEN)
+
+  reporter User @relation("ReportsFiled", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+
+  @@index([targetType, targetId])
+  @@index([status])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  data      Json
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}

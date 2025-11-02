@@ -3,6 +3,7 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
+import { requireAuth } from '@/middleware';
 import routes from '@/routes';
 
 const app = express();

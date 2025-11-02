@@ -1,10 +1,10 @@
 import { Router } from 'express';
 
-import { requireAuth } from '@/middleware';
+import { attachUser, requireAuth } from '@/middleware';
 
 import mediaRouter from './media';
 
 const router = Router();
-router.use('/media', requireAuth, mediaRouter);
+router.use('/media', requireAuth, attachUser, mediaRouter);
 
 export default router;

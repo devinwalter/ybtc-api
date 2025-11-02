@@ -3,7 +3,7 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import { requireAuth } from '@/middleware';
+import { attachUser, requireAuth } from '@/middleware';
 import routes from '@/routes';
 
 const app = express();
@@ -15,8 +15,8 @@ app.use(morgan('dev'));
 
 app.use('/api/v1', routes);
 
-app.get('/', (_req, res) => {
-  res.json({ message: 'You Be The Critic API is live.' });
+app.get('/', requireAuth, attachUser, (req, res) => {
+  res.json({ message: 'You Be The Critic API is live.', user: req.user });
 });
 
 export default app;

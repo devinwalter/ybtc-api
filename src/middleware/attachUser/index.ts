@@ -9,19 +9,19 @@ export async function attachUser(req: Request, res: Response, next: NextFunction
     if (!auth?.payload.sub) {
       return res.status(401).json({ message: 'No auth sub found' });
     }
-
     let user = await prisma.user.findUnique({ where: { authId: auth.payload.sub } });
 
     if (!user) {
-      // TODO: create?
+      user = await prisma.user.create({
+        data: {
+          authId: auth.payload.sub,
+          email: null,
+          name: null,
+        },
+      });
     }
 
-    if (user) {
-      req.user = user;
-    } else {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
+    req.user = user;
     next();
   } catch (err) {
     console.error('Error attaching user', err);

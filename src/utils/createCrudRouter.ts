@@ -7,10 +7,7 @@ type CrudRouterOptions<TModel> = {
   extend?: (router: Router) => void;
 };
 
-export const createCrudRouter = <TModel>({
-  controller,
-  extend,
-}: CrudRouterOptions<TModel>) => {
+export const createCrudRouter = <TModel>({ controller, extend }: CrudRouterOptions<TModel>) => {
   const router = Router();
 
   router.get('/', controller.list);

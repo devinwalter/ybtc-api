@@ -28,4 +28,22 @@ export class BookConnector extends BaseConnector {
       }),
     );
   }
+
+  async getById(id: string): Promise<ExternalMedia | null> {
+    const { data } = await axios.get(`https://openlibrary.org/works/${id}.json`);
+
+    if (!data) {
+      return null;
+    }
+
+    return this.normalizeResult({
+      id: data.key,
+      title: data.title,
+      author: data.authors?.[0].name,
+      year: data.first_publish_year?.toString(),
+      coverUrl: data.cover_i
+        ? `https://covers.openlibrary.org/b/id/${data.cover_i}-M.jpg`
+        : undefined,
+    });
+  }
 }

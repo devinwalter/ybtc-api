@@ -15,7 +15,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
   ],
-  ignorePatterns: ['dist', 'node_modules'],
+  ignorePatterns: ['dist', 'node_modules', 'src/**/*.spec.ts', 'src/**/*.test.ts', 'test/**/*'],
   rules: {
     '@typescript-eslint/no-unused-vars': [
       'warn',

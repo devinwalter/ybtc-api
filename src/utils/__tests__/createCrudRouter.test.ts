@@ -12,12 +12,8 @@ describe('createCrudRouter', () => {
     create: jest.fn((_: express.Request, res: express.Response) =>
       res.status(201).json({ route: 'create' }),
     ),
-    update: jest.fn((_: express.Request, res: express.Response) =>
-      res.json({ route: 'update' }),
-    ),
-    delete: jest.fn((_: express.Request, res: express.Response) =>
-      res.json({ route: 'delete' }),
-    ),
+    update: jest.fn((_: express.Request, res: express.Response) => res.json({ route: 'update' })),
+    delete: jest.fn((_: express.Request, res: express.Response) => res.json({ route: 'delete' })),
   };
 
   const customHandler = jest.fn((_: express.Request, res: express.Response) =>

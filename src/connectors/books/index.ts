@@ -16,6 +16,7 @@ export class BookConnector extends BaseConnector {
     const url = `${this.BASE_URL}?q=${encodeURIComponent(query)}&limit=10`;
     const { data } = await axios.get(url);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (data.docs || []).map((book: any) =>
       this.normalizeResult({
         id: book.key,

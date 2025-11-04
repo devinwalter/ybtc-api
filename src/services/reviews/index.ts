@@ -20,7 +20,7 @@ export class ReviewService extends BaseService<Review> {
       externalId: string;
       provider: string;
       title: string;
-      metadata?: any;
+      metadata?: Record<string, unknown>;
       contentfulId: string;
       rating: number;
       type: MediaType;

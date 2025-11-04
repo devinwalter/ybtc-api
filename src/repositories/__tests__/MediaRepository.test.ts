@@ -36,9 +36,7 @@ describe('MediaRepository', () => {
       findFirst: jest.fn().mockResolvedValue(existing),
     });
 
-    await expect(
-      repo.findOrCreateByExternalId('OPEN_LIBRARY', 'ext-1'),
-    ).resolves.toBe(existing);
+    await expect(repo.findOrCreateByExternalId('OPEN_LIBRARY', 'ext-1')).resolves.toBe(existing);
     expect(model.findFirst).toHaveBeenCalledWith({
       where: {
         externals: { some: { provider: 'OPEN_LIBRARY', externalId: 'ext-1' } },
@@ -67,9 +65,9 @@ describe('MediaRepository', () => {
       create: jest.fn().mockResolvedValue(created),
     });
 
-    await expect(
-      repo.findOrCreateByExternalId('OPEN_LIBRARY', 'ext-1', connector),
-    ).resolves.toBe(created);
+    await expect(repo.findOrCreateByExternalId('OPEN_LIBRARY', 'ext-1', connector)).resolves.toBe(
+      created,
+    );
 
     expect(connector.getById).toHaveBeenCalledWith('ext-1');
     expect(model.create).toHaveBeenCalledWith({
@@ -101,9 +99,9 @@ describe('MediaRepository', () => {
       create: jest.fn().mockResolvedValue(created),
     });
 
-    await expect(
-      repo.findOrCreateByExternalId('OPEN_LIBRARY', 'ext-2', connector),
-    ).resolves.toBe(created);
+    await expect(repo.findOrCreateByExternalId('OPEN_LIBRARY', 'ext-2', connector)).resolves.toBe(
+      created,
+    );
 
     expect(model.create).toHaveBeenCalledWith({
       data: {

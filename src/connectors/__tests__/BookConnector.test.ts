@@ -74,9 +74,7 @@ describe('BookConnector', () => {
     const connector = new BookConnector();
     const result = await connector.getById('work-unknown');
 
-    expect(mockedAxios.get).toHaveBeenCalledWith(
-      'https://openlibrary.org/works/work-unknown.json',
-    );
+    expect(mockedAxios.get).toHaveBeenCalledWith('https://openlibrary.org/works/work-unknown.json');
     expect(result).toBeNull();
   });
 

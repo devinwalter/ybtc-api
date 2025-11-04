@@ -1,8 +1,8 @@
 import express from 'express';
 import request from 'supertest';
 
-const requireAuthMock = jest.fn((_: express.Request, __: express.Response, next: express.NextFunction) =>
-  next(),
+const requireAuthMock = jest.fn(
+  (_: express.Request, __: express.Response, next: express.NextFunction) => next(),
 );
 const attachUserMock = jest.fn((req: any, _: express.Response, next: express.NextFunction) => {
   req.user = { id: 'user-1' };

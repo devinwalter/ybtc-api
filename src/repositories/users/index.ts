@@ -22,7 +22,7 @@ export class UserRepository extends BaseRepository<User> {
         favoriteMediaId: data.favoriteMediaId ?? undefined,
       },
       create: {
-        authid: data.authId,
+        authId: data.authId,
         email: data.email ?? null,
         name: data.name ?? null,
         avatarUrl: data.avatarUrl ?? undefined,

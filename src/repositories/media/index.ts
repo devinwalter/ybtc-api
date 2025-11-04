@@ -9,6 +9,16 @@ export class MediaRepository extends BaseRepository<Media> {
     super(prisma, prisma.media);
   }
 
+  override async findAll(): Promise<Media[]> {
+    return this.model.findMany({
+      include: {
+        _count: {
+          select: { reviews: true },
+        },
+      },
+    });
+  }
+
   // example of custom query
   async findByType(type: string): Promise<Media[]> {
     return this.model.findMany({ where: { type } });
